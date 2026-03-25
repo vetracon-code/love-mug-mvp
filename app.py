@@ -148,6 +148,42 @@ def pick_message(variant: str):
 def index():
     return redirect(url_for('love_home'))
 
+@app.route('/love/check')
+def love_check():
+    token = request.args.get('love_token', '').strip()
+
+    if not token:
+        return {
+            'status': 'invalid',
+            'redirect_url': 'https://latazzacheparlalove2026.app-me.it/collecting'
+        }
+
+    db = get_db()
+    row = db.execute(
+        'SELECT * FROM activation_codes WHERE token = ?',
+        (token,)
+    ).fetchone()
+
+    if not row:
+        return {
+            'status': 'invalid',
+            'redirect_url': 'https://latazzacheparlalove2026.app-me.it/collecting'
+        }
+
+    expiry = parse_dt(row['expiry_date'])
+    now = datetime.now(UTC)
+
+    if row['status'] == 'active' and expiry and expiry > now:
+        return {
+            'status': 'active',
+            'redirect_url': 'https://latazzacheparlalove2026.app-me.it'
+        }
+
+    return {
+        'status': 'expired',
+        'redirect_url': 'https://latazzacheparlalove2026.app-me.it/collecting'
+    }
+
 
 @app.route('/love')
 def love_home():
@@ -263,7 +299,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username', '')
         password = request.form.get('password', '')
-        if username == app.config.get('ADMIN_USERNAME', 'admin') and password == app.config.get('ADMIN_PASSWORD_PLAIN', 'love2026'):
+        if username == app.config['ADMIN_USERNAME'] and check_password_hash(app.config['ADMIN_PASSWORD_HASH'], password):
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         flash('Credenziali non valide.')
@@ -359,34 +395,6 @@ def toggle_message(message_id):
 def expire_code(code_id):
     execute('UPDATE activation_codes SET status = ? WHERE id = ?', ('expired', code_id), commit=True)
     flash('Codice impostato come scaduto.')
-    return redirect(url_for('admin_dashboard'))
-
-
-@app.route('/admin/codes/<int:code_id>/reactivate', methods=['POST'])
-@login_required
-def reactivate_code(code_id):
-    row = execute('SELECT token, expiry_date FROM activation_codes WHERE id = ?', (code_id,), one=True)
-    if not row:
-        flash('Codice non trovato.')
-        return redirect(url_for('admin_dashboard'))
-
-    if row['token'] and row['expiry_date']:
-        execute('UPDATE activation_codes SET status = ? WHERE id = ?', ('active', code_id), commit=True)
-        flash('Codice riattivato.')
-    else:
-        flash('Questo codice non può essere riattivato perché non è mai stato attivato davvero.')
-    return redirect(url_for('admin_dashboard'))
-
-
-@app.route('/admin/codes/<int:code_id>/reset', methods=['POST'])
-@login_required
-def reset_code(code_id):
-    execute(
-        'UPDATE activation_codes SET status = ?, variant = NULL, token = NULL, activation_date = NULL, expiry_date = NULL, last_access = NULL, renewed_at = NULL WHERE id = ?',
-        ('unused', code_id),
-        commit=True
-    )
-    flash('Codice resettato come nuovo.')
     return redirect(url_for('admin_dashboard'))
 
 if __name__ == "__main__":
