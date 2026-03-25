@@ -11,13 +11,12 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'app.db')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'love-mug-segreto-2026')
 app.config['ADMIN_USERNAME'] = os.environ.get('ADMIN_USERNAME', 'admin')
 app.config['ADMIN_PASSWORD_HASH'] = os.environ.get(
     'ADMIN_PASSWORD_HASH',
-    generate_password_hash('cambia-subito-questa-password', method='pbkdf2:sha256')
+    'pbkdf2:sha256'
 )
-
 
 def get_db():
     if 'db' not in g:
@@ -264,7 +263,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username', '')
         password = request.form.get('password', '')
-        if username == app.config['ADMIN_USERNAME'] and check_password_hash(app.config['ADMIN_PASSWORD_HASH'], password):
+        if username == app.config.get('ADMIN_USERNAME', 'admin') and password == app.config.get('ADMIN_PASSWORD_PLAIN', 'love2026'):
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         flash('Credenziali non valide.')
@@ -390,8 +389,5 @@ def reset_code(code_id):
     flash('Codice resettato come nuovo.')
     return redirect(url_for('admin_dashboard'))
 
-
-if __name__ == '__main__':
-    if not os.path.exists(DB_PATH):
-        init_db()
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
