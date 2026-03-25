@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <h1>Pagamento in verifica</h1>
+  <p>Stiamo controllando il rinnovo. Riprova tra poco.</p>
+  <a class="btn" href="{{ url_for('love_token', token=token) }}">Aggiorna pagina</a>
+</section>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+  <div class="row between">
+    <div>
+      <h1>Pannello admin</h1>
+      <p class="muted">Gestisci impostazioni, codici e messaggi.</p>
+    </div>
+    <a class="linkbtn" href="{{ url_for('admin_logout') }}">Esci</a>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Impostazioni</h2>
+  <form method="post" action="{{ url_for('admin_settings') }}" class="stack">
+    <label>Nome brand
+      <input type="text" name="brand_name" value="{{ brand_name }}">
+    </label>
+    <label>Testo rinnovo
+      <input type="text" name="renewal_price_text" value="{{ renewal_price_text }}">
+    </label>
+    <label class="inline"><input type="checkbox" name="variants_enabled" {% if variants_enabled %}checked{% endif %}> Abilita varianti Lei / Lui / Neutro</label>
+    <button class="btn" type="submit">Salva impostazioni</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Genera codici</h2>
+  <form method="post" action="{{ url_for('generate_codes') }}" class="row gap wraprow">
+    <input type="number" name="qty" value="10" min="1" max="200">
+    <button class="btn" type="submit">Crea codici</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Aggiungi messaggio</h2>
+  <form method="post" action="{{ url_for('add_message') }}" class="stack">
+    <select name="variant">
+      <option value="lei">Lei</option>
+      <option value="lui">Lui</option>
+      <option value="neutro">Neutro</option>
+    </select>
+    <textarea name="body" rows="3" placeholder="Scrivi qui il messaggio" required></textarea>
+    <button class="btn" type="submit">Aggiungi</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Ultimi codici</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Codice</th><th>Stato</th><th>Variante</th><th>Scadenza</th><th>Link</th><th>Azione</th></tr></thead>
+      <tbody>
+      {% for c in codes %}
+        <tr>
+          <td>{{ c['code'] }}</td>
+          <td>{{ c['status'] }}</td>
+          <td>{{ c['variant'] or '-' }}</td>
+          <td>{{ c['expiry_date'] or '-' }}</td>
+          <td>{% if c['token'] %}<code>/love/t/{{ c['token'] }}</code>{% else %}-{% endif %}</td>
+          <td>
+            {% if c['status'] == 'active' %}
+              <form method="post" action="{{ url_for('expire_code', code_id=c['id']) }}" style="margin-bottom:6px;">
+                <button class="smallbtn" type="submit">Forza scadenza</button>
+              </form>
+              <form method="post" action="{{ url_for('reset_code', code_id=c['id']) }}">
+                <button class="smallbtn" type="submit">Resetta</button>
+              </form>
+            {% elif c['status'] == 'expired' %}
+              <form method="post" action="{{ url_for('reactivate_code', code_id=c['id']) }}" style="margin-bottom:6px;">
+                <button class="smallbtn" type="submit">Riattiva</button>
+              </form>
+              <form method="post" action="{{ url_for('reset_code', code_id=c['id']) }}">
+                <button class="smallbtn" type="submit">Resetta</button>
+              </form>
+            {% elif c['status'] == 'unused' %}
+              -
+            {% else %}
+              <form method="post" action="{{ url_for('reset_code', code_id=c['id']) }}">
+                <button class="smallbtn" type="submit">Resetta</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Messaggi</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Variante</th><th>Messaggio</th><th>Stato</th><th>Azione</th></tr></thead>
+      <tbody>
+      {% for m in messages %}
+        <tr>
+          <td>{{ m['variant'] }}</td>
+          <td>{{ m['body'] }}</td>
+          <td>{{ 'attivo' if m['is_active'] else 'spento' }}</td>
+          <td>
+            <form method="post" action="{{ url_for('toggle_message', message_id=m['id']) }}">
+              <button class="smallbtn" type="submit">Attiva/Disattiva</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

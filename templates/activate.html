@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <p class="eyebrow">{{ brand_name }}</p>
+  <h1>Inserisci il tuo codice</h1>
+  <p>Trovi il codice sulla card o nella confezione.</p>
+  <form method="post" class="stack narrow">
+    <input type="text" name="code" placeholder="LOVE-XXXXXX" required>
+    <button class="btn" type="submit">Attiva ora</button>
+  </form>
+</section>
+{% endblock %}

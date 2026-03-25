@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <h1>Accesso amministratore</h1>
+  <form method="post" class="stack narrow">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button class="btn" type="submit">Entra</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <p class="eyebrow">{{ brand_name }}</p>
+  <h1>A chi è dedicata questa tazza?</h1>
+  <form method="post" class="stack narrow left">
+    <label><input type="radio" name="variant" value="lei" checked> Per lei</label>
+    <label><input type="radio" name="variant" value="lui"> Per lui</label>
+    <label><input type="radio" name="variant" value="neutro"> Neutro</label>
+    <button class="btn" type="submit">Salva e continua</button>
+  </form>
+</section>
+{% endblock %}

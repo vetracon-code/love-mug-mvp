@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <p class="eyebrow">{{ brand_name }}</p>
+  <h1>Questa non è una semplice tazza.</h1>
+  <p>Ogni giorno può dirti qualcosa di diverso. Ma prima deve essere attivata.</p>
+  <a class="btn" href="{{ url_for('activate_code') }}">Attiva la tua tazza</a>
+</section>
+{% endblock %}

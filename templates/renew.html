@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  <h1>La tua Love Mug può continuare a parlare</h1>
+  <p>Il primo anno di contenuti inclusi è terminato.</p>
+  <p class="price">Rinnovo: {{ renewal_price_text }}</p>
+  <p class="muted">In questo MVP il pulsante sotto simula il pagamento andato a buon fine.</p>
+  <form method="post" action="{{ url_for('renew', token=token) }}">
+    <button class="btn" type="submit">Rinnova ora</button>
+  </form>
+</section>
+{% endblock %}

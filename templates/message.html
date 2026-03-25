@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card center">
+  {% if activated %}<p class="success">Attivazione completata.</p>{% endif %}
+  {% if request.args.get('renewed') == '1' %}<p class="success">Rinnovo completato.</p>{% endif %}
+  <p class="eyebrow">Oggi voglio dirti che…</p>
+  <blockquote>{{ message }}</blockquote>
+  <p class="muted">Variante: {{ variant|capitalize }}</p>
+  <p class="tiny">Salva questo link nei preferiti: <br><strong>{{ request.url_root[:-1] }}{{ url_for('love_token', token=token) }}</strong></p>
+</section>
+{% endblock %}
