@@ -15,8 +15,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'love-mug-segreto-2026')
 app.config['ADMIN_USERNAME'] = os.environ.get('ADMIN_USERNAME', 'admin')
 app.config['ADMIN_PASSWORD_HASH'] = os.environ.get(
     'ADMIN_PASSWORD_HASH',
-    'pbkdf2:sha256'
+    'pbkdf2:sha256:600000$M4y1Rc2PAojMuE7g$e438479c8415ddae46ebddbbdc55a5ff0b0d672d0a968a4507beb248e206ce43'
 )
+
 
 def get_db():
     if 'db' not in g:
@@ -237,7 +238,7 @@ def complete_activation(code: str, variant: str):
     )
     db.commit()
     session.pop('pending_code', None)
-    return redirect(url_for('love_token', token=token, activated='1'))
+    return redirect(f"https://latazzacheparlalove2026.app-me.it/mobile/communication?love_token={token}")
 
 
 @app.route('/love/t/<token>')
@@ -291,7 +292,7 @@ def renew(token):
         ('active', new_expiry.isoformat(timespec='seconds'), now.isoformat(timespec='seconds'), row['id']),
         commit=True
     )
-    return redirect(url_for('love_token', token=token, renewed='1'))
+    return redirect(f"https://latazzacheparlalove2026.app-me.it/collecting?love_token={token}")
 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
