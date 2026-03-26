@@ -398,5 +398,33 @@ def expire_code(code_id):
     flash('Codice impostato come scaduto.')
     return redirect(url_for('admin_dashboard'))
 
+
+@app.route('/admin/codes/<int:code_id>/reactivate', methods=['POST'])
+@login_required
+def reactivate_code(code_id):
+    row = execute('SELECT token, expiry_date FROM activation_codes WHERE id = ?', (code_id,), one=True)
+    if not row:
+        flash('Codice non trovato.')
+        return redirect(url_for('admin_dashboard'))
+
+    if row['token'] and row['expiry_date']:
+        execute('UPDATE activation_codes SET status = ? WHERE id = ?', ('active', code_id), commit=True)
+        flash('Codice riattivato.')
+    else:
+        flash('Questo codice non può essere riattivato perché non è mai stato attivato davvero.')
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/codes/<int:code_id>/reset', methods=['POST'])
+@login_required
+def reset_code(code_id):
+    execute(
+        'UPDATE activation_codes SET status = ?, variant = NULL, token = NULL, activation_date = NULL, expiry_date = NULL, last_access = NULL, renewed_at = NULL WHERE id = ?',
+        ('unused', code_id),
+        commit=True
+    )
+    flash('Codice resettato come nuovo.')
+    return redirect(url_for('admin_dashboard'))
+
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
