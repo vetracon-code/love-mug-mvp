@@ -46,11 +46,38 @@ def close_db(exception=None):
 
 def execute(query, args=(), one=False, commit=False):
     db = get_db()
+
+    # Caso Postgres
+    if os.environ.get('DATABASE_URL'):
+        cur = db.cursor()
+        cur.execute(query, args)
+
+        rows = None
+        if cur.description:
+            rows = cur.fetchall()
+
+        if commit:
+            db.commit()
+
+        cur.close()
+
+        if rows is None:
+            return None
+
+        if one:
+            return rows[0] if rows else None
+        return rows
+
+    # Caso SQLite
     cur = db.execute(query, args)
     if commit:
         db.commit()
     rows = cur.fetchall()
     cur.close()
+
+    if one:
+        return rows[0] if rows else None
+    return rows
     return (rows[0] if rows else None) if one else rows
 
 
