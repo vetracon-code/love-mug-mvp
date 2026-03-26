@@ -172,7 +172,7 @@ def love_check():
         }
 
     expiry = parse_dt(row['expiry_date'])
-    now = datetime.now(UTC)
+    now = datetime.utcnow()
 
     if row['status'] == 'active' and expiry and expiry > now:
         return {
