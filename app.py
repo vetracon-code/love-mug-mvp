@@ -21,8 +21,19 @@ app.config['ADMIN_PASSWORD_HASH'] = os.environ.get(
 
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(DB_PATH)
-        g.db.row_factory = sqlite3.Row
+        database_url = os.environ.get('DATABASE_URL')
+
+        if database_url:
+            import psycopg2
+            import psycopg2.extras
+            g.db = psycopg2.connect(
+                database_url,
+                cursor_factory=psycopg2.extras.RealDictCursor
+            )
+        else:
+            g.db = sqlite3.connect(DB_PATH)
+            g.db.row_factory = sqlite3.Row
+
     return g.db
 
 
