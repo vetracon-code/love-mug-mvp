@@ -198,7 +198,11 @@ def love_check():
         }
 
     db = get_db()
-    row = db.execute(
+    row = execute(
+    'SELECT * FROM activation_codes WHERE token = %s',
+    (token,),
+    one=True
+)
         'SELECT * FROM activation_codes WHERE token = ?',
         (token,)
     ).fetchone()
